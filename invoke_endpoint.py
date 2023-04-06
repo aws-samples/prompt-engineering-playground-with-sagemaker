@@ -341,7 +341,6 @@ def main():
     ]**
     """
     )
-
     prompt = st.text_area("Enter your prompt here:", height=350)
     placeholder = st.empty()
 
