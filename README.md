@@ -81,6 +81,7 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
   - Next, run the next command found in start_playground.txt -- `streamlit run invoke_endpoint.py`. Make sure you are in the right directory to run this command in the terminal (`amazon-sagemaker-generativeai/studio-playground-ui/`). Once the command is executed, you can view your Streamlit app in your browser.
   - Copy the URL for SageMaker Studio and update the same by appending `/proxy/<port_no>`. You would have received the port number after running the Streamlit app. Domain URL should look similar to `https://d-lcxav5wg2gdg.studio.us-east-1.sagemaker.aws/jupyter/default/proxy/8502/`
   - Once you open the domain link, you can update the json with your model details such as `endpoint_name` and `model parameters` including the ranges.
+  > 📝 The the data type for the range should be the same as default parameter for e.g. if the default value is in `float` then the range values should be in `float` as well. 
   
   ![image](/images/streamlitapp.png)
   
