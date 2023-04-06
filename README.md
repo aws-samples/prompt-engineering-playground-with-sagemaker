@@ -53,7 +53,8 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 - Click on `Home` on the left panel.
 - Deploy a model and capture the endpoint name and model parameters which the model accepts. 
 - Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `prompt-engineering-playground-with-sagemaker
-` folder that you cloned. Note: Create an empty folder with name `templates` inside `prompt-engineering-playground-with-sagemaker
+` folder that you cloned. 
+> 📝 : Create an empty folder with name `templates` inside `prompt-engineering-playground-with-sagemaker
 ` folder.
 
 - Check the instructions for creating GUI within the environment using Streamlit present in `start_playground.txt` file. In order to launch the GUI, click on `File` within SageMaker Studio tab, then click on `New` and navigate to `Terminal`.
