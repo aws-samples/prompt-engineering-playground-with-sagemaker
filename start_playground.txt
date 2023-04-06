@@ -1,0 +1,3 @@
+pip install boto3 streamlit streamlit-ace -Uq
+
+streamlit run invoke_endpoint.py
