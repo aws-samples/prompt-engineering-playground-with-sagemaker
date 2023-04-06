@@ -72,7 +72,8 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 ![image](/images/parameters.png)
 
 - Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `prompt-engineering-playground-with-sagemaker
-` folder that you cloned.
+` folder that you cloned. Note: Create an empty folder with name `templates` inside `prompt-engineering-playground-with-sagemaker
+` folder.
 
 - Check the instructions for creating GUI within the environment using Streamlit present in `start_playground.txt` file. In order to launch the GUI, click on `File` within SageMaker Studio tab, click on `New` and navigate to `Terminal`.
   - Within the Terminal, run the following command: `pip install boto3 streamlit streamlit-ace -Uq`
