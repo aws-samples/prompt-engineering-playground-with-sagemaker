@@ -43,7 +43,7 @@ By using advanced techniques such as few-shot prompting, it is possible to creat
 
 ### Chain of thought prompting
 
-Chain-of-thought (CoT) prompting improves the reasoning ability of LLMs by prompting them to generate a series of intermediate steps that lead to the final answer of a multi-step problem.[
+Chain-of-thought (CoT) prompting improves the reasoning ability of LLMs by prompting them to generate a series of intermediate steps that lead to the final answer of a multi-step problem.
 
 
 In this lab, we are going to uncover how to setup SageMaker Studio for prompt engineering utility and use cases with different types of prompt engineering techniques. 
@@ -71,8 +71,9 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 
 ![image](/images/parameters.png)
 
-- Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `studio-playground-ui` folder within `amazon-sagemaker-generativeai` that you cloned in the first lab. Within the folder, open `invoke_endpoint.py` file. In this file, we will be modifying the model and endpoint name along with the parameters condiguration prior to executing the prompts on the endpoint within the GUI.
-  - Under `code_example`, start modifying the endpoint_name, model_name and the parameters used for the model. Save the `invoke_endpoint` file once it has been updated with the model parameters.  
+- Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `prompt-engineering-playground-with-sagemaker
+` folder that you cloned.
+  
 ![image](/images/invoke_update.png)
 
 
@@ -81,9 +82,12 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
   - Create an empty `templates` folder within `amazon-sagemaker-generativeai` folder before launching the app.
   - Next, run the next command found in start_playground.txt -- `streamlit run invoke_endpoint.py`. Make sure you are in the right directory to run this command in the terminal (`amazon-sagemaker-generativeai/studio-playground-ui/`). Once the command is executed, you can view your Streamlit app in your browser.
   - Copy the URL for SageMaker Studio and update the same by appending `/proxy/<port_no>`. You would have received the port number after running the Streamlit app. Domain URL should look similar to `https://d-lcxav5wg2gdg.studio.us-east-1.sagemaker.aws/jupyter/default/proxy/8502/`
-  - Once you open the domain link, it should have the information regarding adding the new model with the parameters we defined in `invoke_endpoint.py`.
+  - Once you open the domain link, you can update the json with your model details such as `endpoint_name` and `model parameters` including the ranges.
+  
   ![image](/images/streamlitapp.png)
+  
   - Click on `Apply (CMD+Enter)`. Once executed, you should be able to see the endpoint reflected on the left pane with the model parameters that can be tuned as a configuration knob while running prompt engineering.
+  
   ![image](/images/flanmodel.png)
   
 - Now we can get started with the model playground and run prompt engineering on the deployed model endpoint within our environment in a secured fashion.
