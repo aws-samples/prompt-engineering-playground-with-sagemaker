@@ -10,12 +10,10 @@ from streamlit_ace import st_ace
 import streamlit as st
 import string
 
-
 N = 7
 sagemaker_runtime = boto3.client("runtime.sagemaker")
 template_loader = jinja2.FileSystemLoader(searchpath="./")
 template_env = jinja2.Environment(loader=template_loader)
-
 
 code_example = """{
   "model_name": "example",
