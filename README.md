@@ -51,7 +51,26 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 ## Setup - UI
 - Navigate to `SageMaker Studio`.
 - Click on `Home` on the left panel.
-- Deploy a model and capture the endpoint name and model parameters which the model accepts. 
+- Click on `Deployments` and navigate to `Models,notebooks,solutions` link within `SageMaker Jumpstart` in the drop-down menu.
+
+![image](/images/jumpstart-panel.png)
+
+- Under `Foundation Models` search for `FLAN-T5 XXL` model and click on `view model`.
+
+![image](/images/flant5xxl.png)
+
+- As executed in lab1, in a similar way, deploy the Flan-T5 XXL model. You can change the deployment configuration or security settings based on the desired settings but you can go ahead and click on `deploy` for this lab. For deployment of the LLM models -- you can also refer to : https://github.com/aws/amazon-sagemaker-examples/tree/main/inference/generativeai/llm-workshop.
+
+![image](/images/flan-deploy.png)
+
+- Take note of the model Endpoint details: Endpoint arn, Endpoint name, and the model location. IT may take 5-10 minutes to deploy the model endpoint. Endpoint status should switch to `In Service` in some-time. You can also scroll down on the page to open a demo notebook in order to query your endpoint from Studio.
+
+![image](/images/flan-deployed.png)
+
+- Within the notebook for the deployed model, you should be able to check the advanced parameters supported by the model. We may specify any subset of the parameters mentioned below while invoking an endpoint.
+
+![image](/images/parameters.png)
+
 - Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `prompt-engineering-playground-with-sagemaker
 ` folder that you cloned. Note: Create an empty folder with name `templates` inside `prompt-engineering-playground-with-sagemaker
 ` folder.
