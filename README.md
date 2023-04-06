@@ -75,7 +75,7 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 ` folder that you cloned. Note: Create an empty folder with name `templates` inside `prompt-engineering-playground-with-sagemaker
 ` folder.
 
-- Check the instructions for creating GUI within the environment using Streamlit present in `start_playground.txt` file. In order to launch the GUI, click on `File` within SageMaker Studio tab, click on `New` and navigate to `Terminal`.
+- Check the instructions for creating GUI within the environment using Streamlit present in `start_playground.txt` file. In order to launch the GUI, click on `File` within SageMaker Studio tab, then click on `New` and navigate to `Terminal`.
   - Within the Terminal, run the following command: `pip install boto3 streamlit streamlit-ace -Uq`
   - Create an empty `templates` folder within `amazon-sagemaker-generativeai` folder before launching the app.
   - Next, run the next command found in start_playground.txt -- `streamlit run invoke_endpoint.py`. Make sure you are in the right directory to run this command in the terminal (`amazon-sagemaker-generativeai/studio-playground-ui/`). Once the command is executed, you can view your Streamlit app in your browser.
