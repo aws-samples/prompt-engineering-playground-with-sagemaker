@@ -10,10 +10,12 @@ from streamlit_ace import st_ace
 import streamlit as st
 import string
 
+
 N = 7
 sagemaker_runtime = boto3.client("runtime.sagemaker")
 template_loader = jinja2.FileSystemLoader(searchpath="./")
 template_env = jinja2.Environment(loader=template_loader)
+
 
 code_example = """{
   "model_name": "example",
@@ -130,7 +132,6 @@ def is_valid_default(parameter, minimum, maximum):
         return True
     return False
 
-
 def generate_text(payload, endpoint_name):
     encoded_input = json.dumps(payload).encode("utf-8")
 
@@ -138,18 +139,24 @@ def generate_text(payload, endpoint_name):
         EndpointName=endpoint_name, ContentType="application/json", Body=encoded_input
     )
     print("Model input: \n", encoded_input)
-    result = json.loads(response["Body"].read().decode())
-
+    result = json.loads(response["Body"].read())
+    
+    # return generated_text
+    if isinstance(result,dict):
+        print(result["generated_texts"])
+        return result["generated_texts"]
+    
     # TO DO: results are either dictionary or list
     for item in result:
         if isinstance(item, list):
             for element in item:
                 if isinstance(element, dict):
-                    print(element["generated_text"])
-                    return element["generated_text"]
+                    print(element["generated_texts"])
+                    return element["generated_texts"]        
+        
         else:
-            print(item["generated_text"])
-            return item["generated_text"]
+            print(item["generated_texts"])
+            return item["generated_texts"]
 
 
 def get_user_input():
@@ -341,6 +348,7 @@ def main():
     ]**
     """
     )
+
     prompt = st.text_area("Enter your prompt here:", height=350)
     placeholder = st.empty()
 
@@ -348,12 +356,14 @@ def main():
         if selected_endpoint != default_endpoint_option:
             placeholder = st.empty()
             endpoint_name = output["endpoint_name"]
-            payload = {
-                "inputs": [
-                    prompt,
-                ],
-                "parameters": parameters,
-            }
+            print(parameters)
+            # payload = {
+            #     "text_inputs": [
+            #         prompt,
+            #     ],
+            #     parameters
+            # }
+            payload = {"text_inputs": prompt, **parameters}
 
             generated_text = generate_text(payload, endpoint_name)
             st.write(generated_text)
