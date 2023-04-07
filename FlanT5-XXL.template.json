@@ -1,0 +1,1 @@
+{"model_name": "FlanT5xxl-model", "endpoint_name": "jumpstart-dft-hf-text2text-flan-t5-xxl", "payload": {"parameters": {"max_length": {"default": 200, "range": [10, 500]}, "num_return_sequences": {"default": 10, "range": [0, 10]}, "top_k": {"default": 3, "range": [0, 10]}, "temperature": {"default": 0.5, "range": [0.0, 1.0]}, "top_p": {"default": 0.95, "range": [0.0, 1.0]}}}}
