@@ -141,22 +141,23 @@ def generate_text(payload, endpoint_name):
     print("Model input: \n", encoded_input)
     result = json.loads(response["Body"].read())
     
-    # return generated_text
-    if isinstance(result,dict):
-        print(result["generated_texts"])
-        return result["generated_texts"]
-    
     # TO DO: results are either dictionary or list
+    # - this works for faster transformr and DJL containers
     for item in result:
+        #print(f" Item={item}, type={type(item)}")
         if isinstance(item, list):
             for element in item:
                 if isinstance(element, dict):
-                    print(element["generated_texts"])
-                    return element["generated_texts"]        
-        
+                    #print(f"List:element::is: {element['generated_text']} ")
+                    return element["generated_text"]
+        elif isinstance(item, str):
+            # print(item["generated_text"])
+            # return item["generated_text"]
+            print(f"probably:Item:from:dict::result[item]={result[item]}")
+            return result[item]
         else:
-            print(item["generated_texts"])
-            return item["generated_texts"]
+            # print(item["generated_text"])
+            return item["generated_text"]
 
 
 def get_user_input():
