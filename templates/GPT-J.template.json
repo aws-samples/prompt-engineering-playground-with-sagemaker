@@ -1,0 +1,32 @@
+{
+    "model_name": "GPT-J",
+    "endpoint_name": "CHANGE_TO_YOUR_ENDPOINT",
+    "payload": {
+        "parameters": {
+            "max_length": {
+                "default": 100,
+                "range": [10, 200]
+            },
+            "num_beams":{
+                "default": 1,
+                "range": [0, 5]
+            },
+            "min_length":{
+                "default":20,
+                "range":[10, 100]
+            },
+            "temperature": {
+                "default": 0.1,
+                "range": [0.0, 1.0]
+            },
+            "no_repeat_ngram_size": {
+                "default": 1,
+                "range": [0,4]
+            },
+            "return_full_text": {
+                "default": true,
+                "range": [true, false]
+            }
+        }
+    }
+}
