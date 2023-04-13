@@ -367,7 +367,8 @@ def main():
             payload = {"text_inputs": prompt, **parameters}
 
             generated_text = generate_text(payload, endpoint_name)
-            st.write(generated_text)
+            final_text = f''' {generated_text} ''' # to take care of multi line prompt
+            st.write(final_text)
         else:
             st.warning("Invalid Endpoint: Please select a valid endpoint")
 
