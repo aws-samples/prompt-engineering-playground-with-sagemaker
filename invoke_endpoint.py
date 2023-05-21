@@ -9,6 +9,9 @@ import random
 from streamlit_ace import st_ace
 import streamlit as st
 import string
+import ai21
+from io import StringIO
+import re
 
 
 N = 7
@@ -19,7 +22,8 @@ template_env = jinja2.Environment(loader=template_loader)
 
 code_example = """{
   "model_name": "example",
-  "endpoint_name": "jumpstart-example-infer-pytorch-textgen-2023-03-22-23-09-15-885",
+  "model_type": "AI21-SUMMARY",
+  "endpoint_name": "summarize",
   "payload": {
     "parameters": {
       "max_length": {
@@ -97,9 +101,66 @@ parameters_help_map = {
     "seed": "Fix the randomized state for reproducibility. If specified, it must be an integer.",
 }
 
+example_list = [" ", "Table Q&A", "Product description", "Summarize reviews", "Generate SQL"]
+
+example_prompts_ai21 = {
+    "Table Q&A": "| Ship Name | Color | Total Passengers | Status | Captain | \n \
+| Symphony | White | 7700 | Active | Mike | \n \
+| Wonder | Grey | 7900 | Under Construction | Anna | \n \
+| Odyssey | White | 5800 | Active | Mohammed | \n \
+| Quantum | White | 5700 | Active | Ricardo | \n \
+| Mariner | Grey | 4300 | Active | Saanvi | \n \
+Q: Which active ship carries the most passengers? \n \
+A: Symphony \n \
+Q: What is the color of the ship whose captain is Saanvi? \n \
+A: Grey \n \
+Q: How many passengers does Ricardo's ship carry? \n \
+A:",
+    "Product description": "Write an engaging product description for clothing eCommerce site. Make sure to include the following features in the description. \n \
+Product: Humor Men's Graphic T-Shirt with a print of Einstein's quote: \"artificial intelligence is no match for natural stupidity” \n \
+Features: \n \
+- Soft cotton \n \
+- Short sleeve \n \
+Description:",
+    "Summarize reviews": "Summarize the following restaurant review \n \
+Restaurant: Luigi's \n \
+Review: We were passing through SF on a Thursday afternoon and wanted some Italian food. We passed by a couple places which were packed until finally stopping at Luigi's, mainly because it was a little less crowded and the people seemed to be mostly locals. We ordered the tagliatelle and mozzarella caprese. The tagliatelle were a work of art - the pasta was just right and the tomato sauce with fresh basil was perfect. The caprese was OK but nothing out of the ordinary. Service was slow at first but overall it was fine. Other than that - Luigi's great experience! \n \
+Summary: Local spot. Not crowded. Excellent tagliatelle with tomato sauce. Service slow at first. \n \
+## \n \
+Summarize the following restaurant review \n \
+Restaurant: La Taqueria \n \
+Review: La Taqueria is a tiny place with 3 long tables inside and 2 small tables outside. The inside is cramped, but the outside is pleasant. Unfortunately, we had to sit inside as all the outside tables were taken. The tacos are delicious and reasonably priced and the salsa is spicy and flavorful. Service was friendly. Aside from the seating, the only thing I didn't like was the lack of parking - we had to walk six blocks to find a spot. \n \
+Summary:",
+    
+"Generate SQL": "Create SQL statement from instruction. \n \
+Database: Customers(CustomerID, CustomerName, ContactName, Address, City, PostalCode, Country)\n \
+Request: all the countries we have customers in without repetitions.\n \
+SQL statement:\n \
+SELECT DISTINCT Country FROM Customers;\n \
+##\n \
+Create SQL statement from instruction.\n \
+Database: Orders(OrderID, CustomerID, EmployeeID, OrderDate, ShipperID)\n \
+Request: select all the orders from customer id 1.\n \
+SQL statement:\n \
+SELECT * FROM Orders\n \
+WHERE CustomerID = 1;\n \
+##\n \
+Create SQL statement from instruction.\n \
+Database: Products(ProductID, ProductName, SupplierID, CategoryID, Unit, Price)\n \
+Request: selects all products from categories 1 and 7\n \
+SQL statement:\n \
+SELECT * FROM Products\n \
+WHERE CategoryID = 1 OR CategoryID = 7;\n \
+##\n \
+Create SQL statement from instruction.\n \
+Database: Customers(CustomerID, CustomerName, ContactName, Address, City, PostalCode, Country)\n \
+Request: change the first customer's name to Alfred Schmidt who lives in Frankfurt city.\n \
+SQL statement:",
+}
+
 
 parameters_help_map = defaultdict(str, parameters_help_map)
-
+example_prompts_ai21 = defaultdict(str, example_prompts_ai21)
 
 def list_templates(dir_path):
     # folder path
@@ -159,6 +220,37 @@ def generate_text(payload, endpoint_name):
             # print(item["generated_text"])
             return item["generated_text"]
 
+def generate_text_ai21(payload, endpoint_name):
+    print("payload type: ", type(payload))
+    response = ai21.Completion.execute(sm_endpoint=endpoint_name,
+                                   prompt=payload["text_inputs"],
+                                   maxTokens=payload["maxTokens"],
+                                   temperature=payload["temperature"],
+                                   numResults=payload["numResults"], 
+                                   # stopSequences=['##']
+                                      )
+
+    print(response['completions'][0]['data']['text'])
+    return response['completions'][0]['data']['text']
+
+def generate_text_ai21_summarize(payload, endpoint_name):
+    # segmented_list = ai21.Segmentation.execute(
+    #     source=payload["text_inputs"],
+    #     sourceType='TEXT')
+    response = ai21.Summarize.execute(
+        source=payload["text_inputs"],
+        sourceType="TEXT",
+        sm_endpoint=endpoint_name)
+    return response['summary']
+
+def generate_text_ai21_context_qa(payload, question, endpoint_name):
+    print('----- Context -------', payload["text_inputs"])
+    print('----- Question ------', question)
+    response = ai21.Answer.execute(
+    context=payload["text_inputs"],
+    question=question,
+    sm_endpoint=endpoint_name)
+    return response['answer']
 
 def get_user_input():
     uploaded_file = st.file_uploader(label="Upload JSON Template", type=["json"])
@@ -280,6 +372,8 @@ def handle_parameters(parameters):
             )
     return parameters
 
+def on_clicked():
+    st.session_state.text = example_prompts_ai21[st.session_state.task]
 
 def main():
     default_endpoint_option = "Select"
@@ -292,7 +386,7 @@ def main():
 
     st.sidebar.title("Model Parameters")
     st.image("./ml_image_prompt.png")
-
+    
     # Adding your own model
     with st.expander("Add a New Model"):
         st.header("Add a New Model")
@@ -334,26 +428,39 @@ def main():
     if selected_endpoint != default_endpoint_option:
         output_text = read_template(f"templates/{selected_endpoint}.template.json")
         output = json.loads(output_text)
-
         parameters = output["payload"]["parameters"]
-        parameters = handle_parameters(parameters)
+        print("parameters ------------------ ", parameters)
+        if parameters != "None":
+            parameters = handle_parameters(parameters)
 
-    st.markdown(
-        """
-    Let's say we want to list the country of origin for foods. Example Input:  
+        st.markdown(
+           output["description"]
+        )
+    if selected_endpoint == "AI21-J2-GRANDE-INSTRUCT":
+        selected_task = st.selectbox(
+            label="Example prompts",
+            options=example_list, 
+            on_change=on_clicked, 
+            key="task"
+            )
+    if selected_endpoint == "AI21-SUMMARY" or selected_endpoint == "AI21-CONTEXT-QA":
+        uploaded_file = st.file_uploader("Choose a file")
+        if uploaded_file is not None:
+            # To convert to a string based IO:
+            stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
 
-    **:red[
-    Pizza comes from Italy
-    Burger comes from USA
-    Curry comes from ...
-    ]**
-    """
-    )
-
-    prompt = st.text_area("Enter your prompt here:", height=350)
+            # To read file as string:
+            string_data = stringio.read()
+            st.session_state.text = string_data
+            prompt = st.session_state.text
+        
+    prompt = st.text_area("Enter your prompt here:", height=350, key="text")
+    if selected_endpoint == "AI21-CONTEXT-QA":
+        question = st.text_area("Enter your question here", height=80, key="question")
     placeholder = st.empty()
 
     if st.button("Run"):
+        final_text=""
         if selected_endpoint != default_endpoint_option:
             placeholder = st.empty()
             endpoint_name = output["endpoint_name"]
@@ -364,14 +471,32 @@ def main():
             #     ],
             #     parameters
             # }
-            payload = {"text_inputs": prompt, **parameters}
-
-            generated_text = generate_text(payload, endpoint_name)
-            final_text = f''' {generated_text} ''' # to take care of multi line prompt
-            st.write(final_text)
+            if parameters != "None":
+                payload = {"text_inputs": prompt, **parameters}
+            else: 
+                payload = {"text_inputs": prompt}
+            if output["model_type"] == "AI21":
+                print('-------- Payload ----------', payload)
+                generated_text = generate_text_ai21(payload, endpoint_name)
+                final_text = f''' {generated_text} ''' # to take care of multi line prompt
+                st.write(final_text)
+            elif output["model_type"] == "AI21-SUMMARY":
+                generated_text = generate_text_ai21_summarize(payload, endpoint_name)
+                summaries = generated_text.split("\n")
+                for summary in summaries:
+                    st.markdown("- " + summary)
+                    final_text+=summary
+            elif output["model_type"] == "AI21-CONTEXT-QA":
+                generated_text = generate_text_ai21_context_qa(payload, question, endpoint_name)
+                final_text = f''' {generated_text} ''' # to take care of multi line prompt
+                st.write(final_text)
+            else: 
+                generated_text = generate_text(payload, endpoint_name)
+                final_text = f''' {generated_text} ''' # to take care of multi line prompt
+                st.write(final_text)
         else:
             st.warning("Invalid Endpoint: Please select a valid endpoint")
-
+        st.download_button("Download", final_text, file_name="output.txt")
 
 if __name__ == "__main__":
     main()
