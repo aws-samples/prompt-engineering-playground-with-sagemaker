@@ -102,7 +102,7 @@ parameters_help_map = {
 }
 
 example_list = [" ", "Table Q&A", "Product description", "Summarize reviews", "Generate SQL"]
-
+example_context_ai21_qa = ["Sample Context ", "Financial", "Healthcare"]
 example_prompts_ai21 = {
     "Table Q&A": "| Ship Name | Color | Total Passengers | Status | Captain | \n \
 | Symphony | White | 7700 | Active | Mike | \n \
@@ -158,9 +158,47 @@ Request: change the first customer's name to Alfred Schmidt who lives in Frankfu
 SQL statement:",
 }
 
-
+example_context_ai21_qa = {
+    "Financial": "n 2020 and 2021, enormous QE — approximately $4.4 trillion, or 18%, of 2021 gross domestic product (GDP) — and enormous fiscal stimulus (which has been and always will be inflationary) — approximately $5 trillion, or 21%, of 2021 GDP — stabilized markets and allowed companies to raise enormous amounts of capital. In addition, this infusion of capital saved many small businesses and put more than $2.5 trillion in the hands of consumers and almost $1 trillion into state and local coffers. These actions led to a rapid decline in unemployment, dropping from 15% to under 4% in 20 months — the magnitude and speed of which were both unprecedented. Additionally, the economy grew 7% in 2021 despite the arrival of the Delta and Omicron variants and the global supply chain shortages, which were largely fueled by the dramatic upswing in consumer spending and the shift in that spend from services to goods. Fortunately, during these two years, vaccines for COVID-19 were also rapidly developed and distributed. \n \
+In today's economy, the consumer is in excellent financial shape (on average), with leverage among the lowest on record, excellent mortgage underwriting (even though we've had home price appreciation), plentiful jobs with wage increases and more than $2 trillion in excess savings, mostly due to government stimulus. Most consumers and companies (and states) are still flush with the money generated in 2020 and 2021, with consumer spending over the last several months 12% above pre-COVID-19 levels. (But we must recognize that the account balances in lower-income households, smaller to begin with, are going down faster and that income for those households is not keeping pace with rising inflation.) \n \
+Today's economic landscape is completely different from the 2008 financial crisis when the consumer was extraordinarily overleveraged, as was the financial system as a whole — from banks and investment banks to shadow banks, hedge funds, private equity, Fannie Mae and many other entities. In addition, home price appreciation, fed by bad underwriting and leverage in the mortgage system, led to excessive speculation, which was missed by virtually everyone — eventually leading to nearly $1 trillion in actual losses.",
+    "Healthcare": "A heart attack occurs when blood flow that brings \
+oxygen-rich blood to the heart muscle is severely \
+reduced or cut off. This is due to a buildup of fat,\
+cholesterol and other substances (plaque) that narrows\
+coronary arteries. This process is called atherosclerosis.\
+When plaque in a heart artery breaks open, a blood clot\
+forms. The clot can block blood flow. When it completely\
+stops blood flow to part of the heart muscle, that\
+portion of muscle begins to die. Damage increases the\
+longer an artery stays blocked. Once some of the heart\
+muscle dies, permanent heart damage results.\
+The amount of damage to the heart muscle depends on\
+the size of the area supplied by the blocked artery and\
+the time between injury and treatment. The blocked\
+artery should be opened as soon as possible to reduce\
+heart damage. \n \
+Atherosclerosis develops over time. It often has no symptoms\
+until enough damage lessens blood flow to your heart\
+muscle. That means you usually can’t feel it happening until\
+blood flow to heart muscle is blocked. \n \
+You should know the warning signs of heart attack so you\
+can get help right away for yourself or someone else.\
+Some heart attacks are sudden and intense. But most start\
+slowly, with mild pain or discomfort. Signs of a heart attack\
+include:\n\
+• Uncomfortable pressure, squeezing, fullness or pain in the\
+center of your chest. It lasts more than a few minutes, or\
+goes away and comes back.\n\
+• Pain or discomfort in one or both arms, your back, neck,\
+jaw or stomach.\n\
+• Shortness of breath with or without chest discomfort.\n\
+• Other signs such as breaking out in a cold sweat, nausea\
+or lightheadedness."
+}
 parameters_help_map = defaultdict(str, parameters_help_map)
 example_prompts_ai21 = defaultdict(str, example_prompts_ai21)
+example_context_ai21_qa = defaultdict(str, example_context_ai21_qa)
 
 def list_templates(dir_path):
     # folder path
@@ -375,6 +413,9 @@ def handle_parameters(parameters):
 def on_clicked():
     st.session_state.text = example_prompts_ai21[st.session_state.task]
 
+def on_clicked_qa():
+    st.session_state.text = example_context_ai21_qa[st.session_state.taskqa]
+
 def main():
     default_endpoint_option = "Select"
     st.session_state["new_template_added"] = False
@@ -442,6 +483,13 @@ def main():
             options=example_list, 
             on_change=on_clicked, 
             key="task"
+            )
+    if selected_endpoint == "AI21-CONTEXT-QA":
+        selected_task = st.selectbox(
+            label="Example context",
+            options=example_context_ai21_qa, 
+            on_change=on_clicked_qa, 
+            key="taskqa"
             )
     if selected_endpoint == "AI21-SUMMARY" or selected_endpoint == "AI21-CONTEXT-QA":
         uploaded_file = st.file_uploader("Choose a file")
