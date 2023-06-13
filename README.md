@@ -62,8 +62,6 @@ In this lab, we are going to uncover how to setup SageMaker Studio for prompt en
 
 - As executed in lab1, in a similar way, deploy the Flan-T5 XL model. You can change the deployment configuration or security settings based on the desired settings but you can go ahead and click on `deploy` for this lab. For deployment of the LLM models -- you can also refer to : https://github.com/aws/amazon-sagemaker-examples/tree/main/inference/generativeai/llm-workshop.
 
-![image](/images/flan-deploy.png)
-
 - Take note of the model Endpoint details: Endpoint arn, Endpoint name, and the model location. IT may take 5-10 minutes to deploy the model endpoint. Endpoint status should switch to `In Service` in some-time. You can also scroll down on the page to open a demo notebook in order to query your endpoint from Studio.
 
 - Now that our endpoint is created (which can also be seen in SageMaker-Studio dashboard), navigate to `studio-playground-ui` folder that you cloned.
